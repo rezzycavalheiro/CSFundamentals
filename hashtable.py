@@ -75,3 +75,10 @@ hashTable.get_value(5)
 
 hashTable.delete_val(1)
 print('Deleted values: ', hashTable)
+
+'''
+Output: 
+Inserted values:  [][(1, 'Renata')][][][][(5, 'Joao')][][][][]
+Item at position 5 : Joao
+Deleted values:  [][][][][][(5, 'Joao')][][][][]
+'''
