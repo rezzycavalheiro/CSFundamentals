@@ -9,6 +9,7 @@ from random import seed
 from random import randint
 from random import randint, randrange
 import tracemalloc
+import time
 
 class Empregado:    
     def insere_empregado(self, codigo, salario, setor):
@@ -172,8 +173,11 @@ def populate_table(size, empregados, hashTable, hashFunction):
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_modular(empregado)
-            # for _ in range(0, 10):
-            #     hashTable.get_value(empregado)
+            # Change hashing function in get value to search!!!
+            start_time = time.time()
+            for _ in range(0, 10):
+                hashTable.get_value(empregado)
+        print("--- %s seconds ---" % (time.time() - start_time))
         current, peak = tracemalloc.get_traced_memory()
         print('Uso de memória atual:  %.2f MB ' % ((current/1024)/1024), 'Maior uso foi: %.2f MB ' % ((peak/1024)/1024))
         tracemalloc.reset_peak()
@@ -184,6 +188,11 @@ def populate_table(size, empregados, hashTable, hashFunction):
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_dobra(empregado)
+            # Change hashing function in get value to search!!!
+            start_time = time.time()
+            for _ in range(0, 10):
+                hashTable.get_value(empregado)
+        print("--- %s seconds ---" % (time.time() - start_time))
         print('Dobra -> número de colisões para:', size, ':', hashTable.get_collision())
         current, peak = tracemalloc.get_traced_memory()
         print('Uso de memória atual:  %.2f MB ' % ((current/1024)/1024), 'Maior uso foi: %.2f MB ' % ((peak/1024)/1024))
@@ -194,6 +203,11 @@ def populate_table(size, empregados, hashTable, hashFunction):
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_multiplicacao(empregado)
+            # Change hashing function in get value to search!!!
+            start_time = time.time()
+            for _ in range(0, 10):
+                hashTable.get_value(empregado)
+        print("--- %s seconds ---" % (time.time() - start_time))
         print('Multiplicação -> número de colisões para:', size, ':', hashTable.get_collision())
         current, peak = tracemalloc.get_traced_memory()
         print('Uso de memória atual:  %.2f MB ' % ((current/1024)/1024), 'Maior uso foi: %.2f MB ' % ((peak/1024)/1024))
@@ -201,17 +215,17 @@ def populate_table(size, empregados, hashTable, hashFunction):
         tracemalloc.stop()
 
 # Testing the implementation
-# empregados = Empregado()
-# hashTable = HashTable(5000)
-# populate_table(5000, empregados, hashTable, 'modular')
+empregados = Empregado()
+hashTable = HashTable(5000)
+populate_table(5000, empregados, hashTable, 'modular')
 
-# empregados = Empregado()
-# hashTable = HashTable(20000)
-# populate_table(20000, empregados, hashTable, 'modular')
+empregados = Empregado()
+hashTable = HashTable(20000)
+populate_table(20000, empregados, hashTable, 'modular')
 
-# empregados = Empregado()
-# hashTable = HashTable(100000)
-# populate_table(100000, empregados, hashTable, 'modular')
+empregados = Empregado()
+hashTable = HashTable(100000)
+populate_table(100000, empregados, hashTable, 'modular')
 
 empregados = Empregado()
 hashTable = HashTable(5000)
@@ -225,14 +239,14 @@ empregados = Empregado()
 hashTable = HashTable(100000)
 populate_table(100000, empregados, hashTable, 'dobra')
 
-# empregados = Empregado()
-# hashTable = HashTable(5000)
-# populate_table(5000, empregados, hashTable, 'multiplicacao')
+empregados = Empregado()
+hashTable = HashTable(5000)
+populate_table(5000, empregados, hashTable, 'multiplicacao')
 
-# empregados = Empregado()
-# hashTable = HashTable(20000)
-# populate_table(20000, empregados, hashTable, 'multiplicacao')
+empregados = Empregado()
+hashTable = HashTable(20000)
+populate_table(20000, empregados, hashTable, 'multiplicacao')
 
-# empregados = Empregado()
-# hashTable = HashTable(100000)
-# populate_table(100000, empregados, hashTable, 'multiplicacao')
+empregados = Empregado()
+hashTable = HashTable(100000)
+populate_table(100000, empregados, hashTable, 'multiplicacao')
