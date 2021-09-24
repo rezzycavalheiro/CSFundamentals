@@ -63,7 +63,7 @@ class HashTable:
         else:
             return self.hash_dobra(chave, tamanho)
     
-    def stringify(valor):
+    def stringify(self, valor):
         """ Method to convert integer values into array of component integers """
         string_items = []
         while len(valor) > 0:
@@ -73,7 +73,7 @@ class HashTable:
             string_items.append(chars)
         return string_items
 
-    def folding_hash(valor):
+    def folding_hash(self, valor):
         ''' Quick hack at a folding hash algorithm '''
         hashes = []
         while len(valor) > 0:
@@ -97,13 +97,11 @@ class HashTable:
 
     def insert_value_dobra(self, dictionary):
         key = dictionary['codigo']
-        hash_key = self.hash_dobra(key, self.size-1)
+        # hash_key = self.hash_dobra(key, self.size-1)
+        stringKey = self.stringify(key)
+        hash_key = self.folding_hash(stringKey)
         # Insert hash key in position
-        if(hash_key == ''):
-            hash_key = 0
-        print(hash_key)
-        print(int(hash_key))
-        pos = self.hash_table[int(hash_key)]
+        pos = self.hash_table[hash_key]
         # Checking if key exists before inserting
         found_key = False
         for index, element in enumerate(pos): 
@@ -142,6 +140,10 @@ class HashTable:
     def get_value(self, dictionary):
         key = dictionary['codigo']
         hash_key = key % self.size
+        
+        key = dictionary['codigo']
+        hash_key = self.hash_multiplicacao(key, self.size-1)
+
         pos = self.hash_table[hash_key]
 
         found_key = False
@@ -188,6 +190,8 @@ def populate_table(size, empregados, hashTable, hashFunction):
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_modular(empregado)
+            for _ in range(0, 10):
+                hashTable.get_value(empregado)
         print('Número de colisões para:', size, ':', hashTable.get_collision())
     elif hashFunction == 'dobra':
         for _ in range(0, size):
@@ -213,17 +217,17 @@ empregados = Empregado()
 hashTable = HashTable(100000)
 populate_table(100000, empregados, hashTable, 'modular')
 
-empregados = Empregado()
-hashTable = HashTable(5000)
-populate_table(5000, empregados, hashTable, 'dobra')
+# empregados = Empregado()
+# hashTable = HashTable(5000)
+# populate_table(5000, empregados, hashTable, 'dobra')
 
-empregados = Empregado()
-hashTable = HashTable(20000)
-populate_table(20000, empregados, hashTable, 'dobra')
+# empregados = Empregado()
+# hashTable = HashTable(20000)
+# populate_table(20000, empregados, hashTable, 'dobra')
 
-empregados = Empregado()
-hashTable = HashTable(100000)
-populate_table(100000, empregados, hashTable, 'dobra')
+# empregados = Empregado()
+# hashTable = HashTable(100000)
+# populate_table(100000, empregados, hashTable, 'dobra')
 
 empregados = Empregado()
 hashTable = HashTable(5000)
@@ -236,4 +240,5 @@ populate_table(20000, empregados, hashTable, 'multiplicacao')
 empregados = Empregado()
 hashTable = HashTable(100000)
 populate_table(100000, empregados, hashTable, 'multiplicacao')
+
 
