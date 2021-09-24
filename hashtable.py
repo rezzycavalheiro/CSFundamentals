@@ -8,6 +8,7 @@ from random import random
 from random import seed
 from random import randint
 from random import randint, randrange
+import tracemalloc
 
 class Empregado:    
     def insere_empregado(self, codigo, salario, setor):
@@ -46,25 +47,7 @@ class HashTable:
         else:
             pos.append((key, dictionary))
         
-        
-    def hash_dobra(self, valor, tamanho):
-        valor = str(valor)
-        metade = len(valor)//2
-        primeirametade = valor[0:metade]
-        segundametade = valor[metade:]
-        chave = ''
-        for numero, i in zip(primeirametade, range(len(primeirametade))):
-            soma = int(numero)+ int(segundametade[i])
-            if soma >= 10:
-                soma-=10
-                chave +=  f'{soma}'
-        if len(chave) <= tamanho:
-            return chave
-        else:
-            return self.hash_dobra(chave, tamanho)
-    
     def stringify(self, valor):
-        """ Method to convert integer values into array of component integers """
         string_items = []
         while len(valor) > 0:
             for item in valor:
@@ -73,8 +56,7 @@ class HashTable:
             string_items.append(chars)
         return string_items
 
-    def folding_hash(self, valor):
-        ''' Quick hack at a folding hash algorithm '''
+    def hash_dobra(self, valor):
         hashes = []
         while len(valor) > 0:
             hash_val = 0
@@ -97,11 +79,10 @@ class HashTable:
 
     def insert_value_dobra(self, dictionary):
         key = dictionary['codigo']
-        # hash_key = self.hash_dobra(key, self.size-1)
-        stringKey = self.stringify(key)
-        hash_key = self.folding_hash(stringKey)
+        stringKey = self.stringify([key])
+        hash_key = self.hash_dobra(stringKey)
         # Insert hash key in position
-        pos = self.hash_table[hash_key]
+        pos = self.hash_table[hash_key[0]]
         # Checking if key exists before inserting
         found_key = False
         for index, element in enumerate(pos): 
@@ -187,58 +168,71 @@ def codigo(n):
 
 def populate_table(size, empregados, hashTable, hashFunction):
     if hashFunction == 'modular':
+        tracemalloc.start()
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_modular(empregado)
-            for _ in range(0, 10):
-                hashTable.get_value(empregado)
-        print('Número de colisões para:', size, ':', hashTable.get_collision())
+            # for _ in range(0, 10):
+            #     hashTable.get_value(empregado)
+        current, peak = tracemalloc.get_traced_memory()
+        print('Uso de memória atual:  %.2f MB ' % ((current/1024)/1024), 'Maior uso foi: %.2f MB ' % ((peak/1024)/1024))
+        tracemalloc.reset_peak()
+        tracemalloc.stop()
+        print('Modular -> número de colisões para:', size, ':', hashTable.get_collision())
     elif hashFunction == 'dobra':
+        tracemalloc.start()
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_dobra(empregado)
-        print('Número de colisões para:', size, ':', hashTable.get_collision())
+        print('Dobra -> número de colisões para:', size, ':', hashTable.get_collision())
+        current, peak = tracemalloc.get_traced_memory()
+        print('Uso de memória atual:  %.2f MB ' % ((current/1024)/1024), 'Maior uso foi: %.2f MB ' % ((peak/1024)/1024))
+        tracemalloc.reset_peak()
+        tracemalloc.stop()
     else:
+        tracemalloc.start()
         for _ in range(0, size):
             empregado = empregados.insere_empregado(codigo(9), randrange(1000, 100000), randrange(1, 10))
             hashTable.insert_value_multiplicacao(empregado)
-        print('Número de colisões para:', size, ':', hashTable.get_collision())
+        print('Multiplicação -> número de colisões para:', size, ':', hashTable.get_collision())
+        current, peak = tracemalloc.get_traced_memory()
+        print('Uso de memória atual:  %.2f MB ' % ((current/1024)/1024), 'Maior uso foi: %.2f MB ' % ((peak/1024)/1024))
+        tracemalloc.reset_peak()
+        tracemalloc.stop()
 
 # Testing the implementation
-empregados = Empregado()
-hashTable = HashTable(5000)
-populate_table(5000, empregados, hashTable, 'modular')
-
-empregados = Empregado()
-hashTable = HashTable(20000)
-populate_table(20000, empregados, hashTable, 'modular')
-
-empregados = Empregado()
-hashTable = HashTable(100000)
-populate_table(100000, empregados, hashTable, 'modular')
-
 # empregados = Empregado()
 # hashTable = HashTable(5000)
-# populate_table(5000, empregados, hashTable, 'dobra')
+# populate_table(5000, empregados, hashTable, 'modular')
 
 # empregados = Empregado()
 # hashTable = HashTable(20000)
-# populate_table(20000, empregados, hashTable, 'dobra')
+# populate_table(20000, empregados, hashTable, 'modular')
 
 # empregados = Empregado()
 # hashTable = HashTable(100000)
-# populate_table(100000, empregados, hashTable, 'dobra')
+# populate_table(100000, empregados, hashTable, 'modular')
 
 empregados = Empregado()
 hashTable = HashTable(5000)
-populate_table(5000, empregados, hashTable, 'multiplicacao')
+populate_table(5000, empregados, hashTable, 'dobra')
 
 empregados = Empregado()
 hashTable = HashTable(20000)
-populate_table(20000, empregados, hashTable, 'multiplicacao')
+populate_table(20000, empregados, hashTable, 'dobra')
 
 empregados = Empregado()
 hashTable = HashTable(100000)
-populate_table(100000, empregados, hashTable, 'multiplicacao')
+populate_table(100000, empregados, hashTable, 'dobra')
 
+# empregados = Empregado()
+# hashTable = HashTable(5000)
+# populate_table(5000, empregados, hashTable, 'multiplicacao')
 
+# empregados = Empregado()
+# hashTable = HashTable(20000)
+# populate_table(20000, empregados, hashTable, 'multiplicacao')
+
+# empregados = Empregado()
+# hashTable = HashTable(100000)
+# populate_table(100000, empregados, hashTable, 'multiplicacao')
